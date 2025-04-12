@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Go Safe - Empowering Women's Journeys</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5efe7;
+            color: #5c4033;
+            text-align: center;
+            overflow-x: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #664229, #8B5A2B); /* Darker/lighter brown gradient */
+            color: white;
+            padding: 20px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 100;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3); /* Add text shadow */
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 20px;
+            font-size: 18px;
+            font-weight: 500;
+            transition: 0.3s;
+            position: relative; /* For pseudo-element */
+        }
+
+        nav a:hover {
+            text-decoration: none; /* Remove default underline */
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            transform: scaleX(0);
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background-color: #f0e68c; /* Golden highlight */
+            transform-origin: bottom right;
+            transition: transform 0.3s ease-out;
+        }
+
+        nav a:hover::after {
+            transform: scaleX(1);
+            transform-origin: bottom left;
+        }
+
+        .hero {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('./images/1.png') center/cover no-repeat;
+            z-index: -1;
+            opacity: 0.8;
+        }
+
+        .hero h2 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Add text shadow */
+        }
+
+        .hero p {
+            font-size: 20px;
+            max-width: 700px;
+            margin: 0 auto 30px;
+            font-weight: 500;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Add text shadow */
+        }
+
+        .btn {
+            background-color: #a67b5b;
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 30px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transform: perspective(500px) translateZ(0); /* Initial perspective */
+        }
+
+        .btn:hover {
+            background-color: #8a6348;
+            transform: perspective(500px) translateZ(5px); /* Add a slight 3D push on hover */
+        }
+
+        .features {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            padding: 80px 20px;
+            flex-wrap: wrap;
+            background-color: #f5efe7;
+        }
+
+        .feature {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(92, 64, 51, 0.2);
+            width: 320px;
+            text-align: center;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .feature:hover {
+            transform: translateY(-10px);
+        }
+
+        .feature img {
+            width: 120px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+
+        .feature h3 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .feature p {
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        footer {
+            background-color: #a67b5b;
+            color: white;
+            padding: 30px;
+            margin-top: 80px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1 class="logo">Go Safe</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="login.html">Login</a>
+            <a href="ride.html">Book Ride</a>
+            <a href="safety.html">Safety</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h2>She Drives, She Protects, She Empowers – Ride with Her.</h2>
+        <p>Experience safe, reliable, and comfortable rides driven by women, for women. Your security and peace of mind are our top priorities.</p>
+        <a href="ride.html" class="btn">Book Your Safe Ride Now</a>
+    </section>
+
+    <section class="features">
+        <div class="feature">
+            <img src="./images/6.png" alt="Female Driver">
+            <h3>Dedicated Female Drivers</h3>
+            <p>Travel with confidence knowing your driver is a trained, professional woman.</p>
+        </div>
+
+        <div class="feature">
+            <img src="./images/5.png" alt="Live Tracking">
+            <h3>Real-Time Tracking</h3>
+            <p>Track your ride from start to finish for added security and peace of mind.</p>
+        </div>
+
+        <div class="feature">
+            <img src="./images/4.png" alt="Emergency Contact">
+            <h3>Instant Emergency Support</h3>
+            <p>Quick access to emergency contacts and support at the touch of a button.</p>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2024 Go Safe. All rights reserved.</p>
+    </footer>
+   
+</body>
+</html>

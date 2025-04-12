@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Go Safe - Safety Settings</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    body {
+      font-family: 'Montserrat', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5efe7;
+      color: #5c4033;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: linear-gradient(135deg, #664229, #8B5A2B);
+      color: white;
+      padding: 20px 50px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .logo-container h1 {
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin: 0 20px;
+      font-size: 18px;
+      font-weight: 500;
+      position: relative;
+    }
+
+    nav a:hover::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 2px;
+      background-color: #f0e68c;
+      bottom: -5px;
+      left: 0;
+      transition: 0.3s ease-in-out;
+    }
+
+    .safety-page {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      padding: 40px;
+      gap: 30px;
+    }
+
+    .safety-image {
+      flex: 1 1 45%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .safety-image img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 12px;
+      box-shadow: 0 6px 15px rgba(92, 64, 51, 0.2);
+    }
+
+    .form-container {
+      flex: 1 1 45%;
+      padding: 20px;
+    }
+
+    .form-container h2 {
+      font-size: 24px;
+      color: #a67b5b;
+      margin-bottom: 20px;
+    }
+
+    .form-container label {
+      display: block;
+      margin-top: 15px;
+      font-weight: 500;
+    }
+
+    .form-container input,
+    .form-container textarea,
+    .form-container select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 8px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+
+    .form-container button {
+      margin-top: 20px;
+      padding: 12px 20px;
+      background-color: #a67b5b;
+      border: none;
+      color: white;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .form-container button:hover {
+      background-color: #8a6348;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo-container">
+      <h1>Go Safe</h1>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="login.html">Login</a>
+      <a href="ride.html">Book Ride</a>
+      <a href="safety.html">Safety</a>
+    </nav>
+  </header>
+
+  <section class="safety-page">
+    <div class="safety-image">
+      <img src="./images/2.png" alt="Safety Features"/>
+    </div>
+
+    <div class="form-container">
+      <h2>Enhance Your Safety Settings</h2>
+      <form id="safetyForm">
+        <label>
+          <input type="checkbox" id="locationSharing" /> Enable Live Location Sharing
+        </label>
+
+        <label for="emergencyContact">Emergency Contact Number</label>
+        <input type="tel" id="emergencyContact" placeholder="Enter emergency contact number" required />
+
+        <label for="alertMessage">Safety Alert Message</label>
+        <textarea id="alertMessage" placeholder="Enter your alert message" required></textarea>
+
+        <button type="submit">Save Settings</button>
+        <button type="button" id="cancelButton">Cancel Ride</button>
+      </form>
+    </div>
+  </section>
+
+  <script>
+    document.getElementById("safetyForm").addEventListener("submit", async function (event) {
+      event.preventDefault();
+
+      const user_id = localStorage.getItem("user_id"); // Simulate logged in user
+      if (!user_id) {
+        alert("⚠️ Please log in first.");
+        return;
+      }
+
+      const data = {
+        user_id,
+        locationSharing: document.getElementById("locationSharing").checked ? "true" : "false",
+        emergencyContact: document.getElementById("emergencyContact").value,
+        alertMessage: document.getElementById("alertMessage").value
+      };
+
+      try {
+        const response = await fetch("http://localhost:5501/api/safety-settings", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+          alert("✅ Safety settings saved successfully!");
+        } else {
+          alert("❌ Error: " + result.message);
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        alert("⚠️ Failed to connect to server.");
+      }
+    });
+
+    document.getElementById("cancelButton").addEventListener("click", function () {
+      if (confirm("Are you sure you want to cancel the ride?")) {
+        alert("🚫 Ride canceled successfully.");
+      }
+    });
+  </script>
+
+</body>
+</html>
+

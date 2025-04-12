@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Passenger Signup - Go Safe</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Montserrat', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5efe7;
+      color: #5c4033;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    header {
+      width: 100%;
+      background: linear-gradient(135deg, #664229, #8B5A2B);
+      color: white;
+      padding: 20px 50px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .logo-container h1 {
+      font-size: 28px;
+      font-weight: 600;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin: 0 15px;
+      font-size: 18px;
+      font-weight: 500;
+    }
+
+    .form-container {
+      margin-top: 40px;
+      padding: 20px;
+      width: 350px;
+      text-align: center;
+    }
+
+    .form-container h2 {
+      color: #a67b5b;
+      font-size: 28px;
+      margin-bottom: 30px;
+      font-weight: 600;
+    }
+
+    form {
+      text-align: left;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+
+    button {
+      background-color: #a67b5b;
+      color: white;
+      padding: 15px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    button:hover {
+      background-color: #8a6348;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo-container">
+      <h1>Go Safe</h1>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="login.html">Login</a>
+      <a href="ride.html">Book Ride</a>
+      <a href="safety.html">Safety</a>
+    </nav>
+  </header>
+
+  <section class="form-container">
+    <h2>Create Your Passenger Account</h2>
+    <form id="signupForm">
+      <label for="name">Full Name</label>
+      <input type="text" id="name" required>
+
+      <label for="email">Email Address</label>
+      <input type="email" id="email" required>
+
+      <label for="phone">Phone Number</label>
+      <input type="tel" id="phone" required>
+
+      <label for="password">Password</label>
+      <input type="password" id="password" required>
+
+      <label for="idUpload">Upload Government ID</label>
+      <input type="file" id="idUpload" accept="image/*,application/pdf" required>
+
+      <button type="submit">Sign Up</button>
+    </form>
+  </section>
+
+  <script>
+    document.getElementById("signupForm").addEventListener("submit", async function (event) {
+      event.preventDefault();
+
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const password = document.getElementById("password").value;
+      const file = document.getElementById("idUpload").files[0];
+
+      // Validation
+      if (password.length < 8 || !/[0-9]/.test(password) || !/[!@#$%^&*]/.test(password)) {
+        alert('Password must be at least 8 characters long and contain a number and a special character.');
+        return;
+      }
+
+      if (!email.includes('@')) {
+        alert('Enter a valid email address!');
+        return;
+      }
+
+      if (!/^[0-9]{10}$/.test(phone)) {
+        alert('Enter a valid 10-digit phone number!');
+        return;
+      }
+
+      if (file) {
+        const validExtensions = ['jpg', 'jpeg', 'png', 'pdf'];
+        const fileExt = file.name.split('.').pop().toLowerCase();
+        if (!validExtensions.includes(fileExt)) {
+          alert('Upload a valid file (JPG, PNG, PDF)');
+          return;
+        }
+      }
+
+      // Prepare form data
+      const formData = new FormData();
+      formData.append("name", name);
+      formData.append("email", email);
+      formData.append("phone", phone);
+      formData.append("password", password);
+      formData.append("govt_id", file); // Match backend multer field
+
+      try {
+        const response = await fetch("http://localhost:5501/api/auth/register", {
+          method: "POST",
+          body: formData
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+          alert("✅ Signup successful! Redirecting to Book a Ride...");
+          window.location.href = "ride.html";
+        } else {
+          alert(`❌ Error: ${result.message}`);
+        }
+      } catch (error) {
+        alert("❌ Server error. Try again later.");
+        console.error(error);
+      }
+    });
+  </script>
+</body>
+</html>

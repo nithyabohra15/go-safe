@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Go Safe - Your Ride, Your Way</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <style>
+    body {
+      font-family: 'Montserrat', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5efe7;
+      color: #5c4033;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: linear-gradient(135deg, #664229, #8B5A2B);
+      color: white;
+      padding: 20px 50px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin: 0 20px;
+      font-size: 18px;
+      font-weight: 500;
+      transition: 0.3s;
+    }
+
+    .ride-page {
+      display: flex;
+      flex: 1;
+    }
+
+    .image-container {
+      flex: 1;
+      background: url('./images/3.png') center/cover no-repeat;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .ride-form-container {
+      flex: 1;
+      background: white;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 6px 15px rgba(92, 64, 51, 0.2);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100vh;
+    }
+
+    .ride-form-container form {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .ride-form-container input,
+    .ride-form-container select {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 20px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+
+    .ride-form-container button {
+      background-color: #a67b5b;
+      color: white;
+      padding: 15px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 16px;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+    }
+
+    #map {
+      flex-grow: 10;
+      width: 100%;
+      margin-top: 20px;
+      border-radius: 8px;
+      height: 60vh;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo-container">
+      <h1>Go Safe</h1>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="login.html">Login</a>
+      <a href="ride.html">Book Ride</a>
+      <a href="safety.html">Safety</a>
+    </nav>
+  </header>
+
+  <section class="ride-page">
+    <div class="image-container">
+      <h2>Your Safe Journey Starts Here</h2>
+    </div>
+    <div class="ride-form-container">
+      <h2>Book Your Safe Ride</h2>
+      <form id="book-form">
+        <label for="pickup">Pickup Location</label>
+        <input type="text" id="pickup" placeholder="Enter pickup location" required>
+
+        <label for="dropoff">Drop-off Location</label>
+        <input type="text" id="dropoff" placeholder="Enter drop-off location" required>
+
+        <label for="vehicle">Select Mode of Transportation</label>
+        <select id="vehicle">
+          <option value="car">Car</option>
+          <option value="bike">Bike</option>
+          <option value="auto">Auto</option>
+        </select>
+
+        <label for="payment">Choose Payment Method</label>
+        <select id="payment">
+          <option value="card">Credit/Debit Card</option>
+          <option value="upi">UPI</option>
+          <option value="cash">Cash</option>
+        </select>
+
+        <button type="button" onclick="estimateFare()">Estimate Fare</button>
+        <p id="fare">Estimated Fare: ₹0.00</p>
+
+        <button type="submit" class="btn">Book Ride</button>
+      </form>
+      <div id="map"></div>
+    </div>
+  </section>
+
+  <script>
+    // ✅ Get user_id from localStorage (make sure you saved it as 'user_id' after login)
+    const loggedInUserId = localStorage.getItem("user_id");
+    console.log("User ID from localStorage:", loggedInUserId);
+  
+    var map = L.map('map').setView([19.0760, 72.8777], 12);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+  
+    let pickupCoords, dropoffCoords;
+  
+    function searchLocation(query, callback) {
+      fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.length > 0) {
+            callback([data[0].lat, data[0].lon]);
+          } else {
+            alert("⚠️ Location not found!");
+          }
+        });
+    }
+  
+    document.getElementById("pickup").addEventListener("change", function () {
+      searchLocation(this.value, function (coords) {
+        pickupCoords = coords;
+        L.marker(coords).addTo(map).bindPopup("📍 Pickup Location").openPopup();
+        map.setView(coords, 14);
+      });
+    });
+  
+    document.getElementById("dropoff").addEventListener("change", function () {
+      searchLocation(this.value, function (coords) {
+        dropoffCoords = coords;
+        L.marker(coords).addTo(map).bindPopup("📍 Drop-off Location").openPopup();
+        map.setView(coords, 14);
+      });
+    });
+  
+    function estimateFare() {
+      if (!pickupCoords || !dropoffCoords) {
+        alert("⚠️ Enter both pickup and drop-off locations.");
+        return;
+      }
+  
+      const distance = map.distance(pickupCoords, dropoffCoords) / 1000;
+      const farePerKm = {
+        car: 18,
+        bike: 10,
+        auto: 12
+      };
+      const vehicleType = document.getElementById("vehicle").value;
+      const totalFare = 50 + (distance * farePerKm[vehicleType]);
+  
+      document.getElementById("fare").innerText = `Estimated Fare: ₹${totalFare.toFixed(2)}`;
+    }
+  
+    document.getElementById("book-form").addEventListener("submit", function (e) {
+  e.preventDefault();
+
+  // Ensure user is logged in
+  if (!loggedInUserId) {
+    alert("⚠️ You must be logged in to book a ride.");
+    window.location.href = "login.html";
+    return;
+  }
+
+  // Get fare text and parse it
+  const fareText = document.getElementById("fare").innerText;
+  const fare = parseFloat(fareText.replace(/[^\d.]/g, ''));
+
+  // Prepare ride request
+  const request = {
+    user_id: loggedInUserId,
+    pickup_location: document.getElementById("pickup").value,
+    dropoff_location: document.getElementById("dropoff").value,
+    vehicle: document.getElementById("vehicle").value,
+    payment_method: document.getElementById("payment").value,
+    fare: fare // ✅ Send fare!
+  };
+
+  // Send ride booking request to backend
+  axios.post("http://localhost:5501/api/book-ride", request)
+    .then(res => {
+      sessionStorage.setItem("rideDetails", JSON.stringify(res.data));
+      window.location.href = "ride-confirmation.html";
+    })
+    .catch(err => {
+      alert("⚠️ Booking failed! " + (err.response?.data?.message || err.message));
+    });
+});
+
+  </script>
+  
+</body>
+</html>
